@@ -1,5 +1,0 @@
-{
-    "rust-analyzer.linkedProjects": [
-        ".\\crates\\path-to-perdition-android\\Cargo.toml"
-    ]
-}

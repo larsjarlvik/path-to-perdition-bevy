@@ -3,11 +3,6 @@ name = "path-to-perdition"
 authors = ["Lars Jarlvik <lars.jarlvik@gmail.com>"]
 version = "0.1.0"
 edition = "2021"
-resolver = "2"
 
 [dependencies]
 bevy = "0.10.1"
-
-[lib]
-name = "path_to_perdition"
-crate-type = ["lib"]

@@ -1,13 +1,27 @@
-use bevy::prelude::*;
+use bevy::{
+    math::vec3,
+    pbr::*,
+    prelude::*,
+    render::{
+        settings::{Backends, WgpuSettings},
+        RenderPlugin,
+    },
+};
 
 const BACKGROUND_COLOR: Color = Color::rgb(0.0, 0.0, 0.0);
 
 #[bevy_main]
 pub fn main() {
     App::new()
-        .insert_resource(Msaa::Sample8)
+        .add_plugins(DefaultPlugins.set(RenderPlugin {
+            wgpu_settings: WgpuSettings {
+                backends: Some(Backends::VULKAN),
+                ..default()
+            },
+        }))
+        .insert_resource(Msaa::Sample4)
         .insert_resource(ClearColor(BACKGROUND_COLOR))
-        .add_plugins(DefaultPlugins)
+        .insert_resource(DirectionalLightShadowMap { size: 4096 })
         .add_startup_system(setup)
         .add_system(bevy::window::close_on_esc)
         .run();
@@ -17,25 +31,51 @@ fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    ass: Res<AssetServer>,
 ) {
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Torus {
-            radius: 2.0,
-            ring_radius: 0.5,
-            subdivisions_segments: 128,
-            subdivisions_sides: 32,
-        })),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        ..default()
+    let character = ass.load("models/character.glb#Scene0");
+
+    commands.spawn(SceneBundle {
+        scene: character,
+        transform: Transform::from_xyz(0.0, -1.0, 0.0).with_scale(vec3(0.01, 0.01, 0.01)),
+        ..Default::default()
     });
 
-    commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(4.0, 8.0, 4.0),
+    commands.spawn((
+        PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Plane {
+                size: 10.0,
+                subdivisions: 1,
+            })),
+            transform: Transform::from_xyz(0.0, -1.0, 0.0),
+            material: materials.add(StandardMaterial {
+                base_color: Color::WHITE,
+                perceptual_roughness: 0.1,
+                ..default()
+            }),
+            ..default()
+        },
+        NotShadowCaster,
+    ));
+
+    commands.spawn(DirectionalLightBundle {
+        directional_light: DirectionalLight {
+            shadows_enabled: true,
+            illuminance: 12000.0,
+            ..default()
+        },
+        cascade_shadow_config: CascadeShadowConfigBuilder {
+            num_cascades: 3,
+            maximum_distance: 50.0,
+            ..default()
+        }
+        .into(),
+        transform: Transform::from_rotation(Quat::from_euler(EulerRot::XYZ, -1.0, -0.5, -0.5)),
         ..default()
     });
 
     commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(-3.0, 3.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(0.0, 3.0, 6.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
 }
