@@ -1,0 +1,34 @@
+[package]
+name = "path-to-perdition-android"
+authors = ["Lars Jarlvik <lars.jarlvik@gmail.com>"]
+version = "0.1.0"
+edition = "2021"
+resolver = "2"
+
+[dependencies]
+path-to-perdition = { path = "../game" }
+
+[lib]
+name = "path_to_perdition_android"
+crate-type = ["cdylib"]
+
+[package.metadata.android]
+resources = "../../res"
+build_targets = ["aarch64-linux-android", "armv7-linux-androideabi"]
+
+[package.metadata.android.application]
+label = "Path to Perdition"
+icon = "@mipmap/ic_launcher"
+theme = "@style/Theme.Default"
+colorMode = "wideColorGamut"
+
+[package.metadata.android.application.activity]
+label = "Path to Perdition"
+orientation = "landscape"
+
+[[package.metadata.android.uses_permission]]
+name = "android.permission.VIBRATE"
+
+[package.metadata.android.sdk]
+min_sdk_version = 33
+target_sdk_version = 29
