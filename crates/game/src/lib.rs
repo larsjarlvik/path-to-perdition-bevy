@@ -1,24 +1,11 @@
-use bevy::{
-    math::vec3,
-    pbr::*,
-    prelude::*,
-    render::{
-        settings::{Backends, WgpuSettings},
-        RenderPlugin,
-    },
-};
+use bevy::{math::*, pbr::*, prelude::*};
 
 const BACKGROUND_COLOR: Color = Color::rgb(0.0, 0.0, 0.0);
 
 #[bevy_main]
 pub fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(RenderPlugin {
-            wgpu_settings: WgpuSettings {
-                backends: Some(Backends::VULKAN),
-                ..default()
-            },
-        }))
+        .add_plugins(DefaultPlugins)
         .insert_resource(Msaa::Sample4)
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(DirectionalLightShadowMap { size: 4096 })
