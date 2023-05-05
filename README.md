@@ -16,3 +16,10 @@ cargo run --release
 ```
 cargo apk run -p path-to-perdition-android
 ```
+
+#### WebAssembly
+
+**Run**
+```
+WASM_SERVER_RUNNER_DIRECTORY="./crates/game" cargo run --target wasm32-unknown-unknown
+```
