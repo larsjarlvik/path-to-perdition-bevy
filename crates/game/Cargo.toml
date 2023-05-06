@@ -4,8 +4,5 @@ authors = ["Lars Jarlvik <lars.jarlvik@gmail.com>"]
 version = "0.1.0"
 edition = "2021"
 
-[target.'cfg(not(target_os = "android"))'.dependencies]
-bevy = { version = "0.10.1", features = ["dynamic_linking"] }
-
-[target.'cfg(target_os = "android")'.dependencies]
+[dependencies]
 bevy = "0.10.1"
