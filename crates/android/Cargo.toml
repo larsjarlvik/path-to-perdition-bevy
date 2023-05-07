@@ -12,7 +12,7 @@ name = "path_to_perdition_android"
 crate-type = ["staticlib", "cdylib"]
 
 [package.metadata.android]
-resources = "../../res"
+resources = "./res"
 assets = "../game/assets"
 build_targets = ["aarch64-linux-android", "armv7-linux-androideabi"]
 
