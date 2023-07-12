@@ -14,10 +14,10 @@ pub fn main() {
     app.add_plugins(DefaultPlugins)
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(FixedTime::new_from_secs(1.0 / 50.0))
-        .add_system(bevy::window::close_on_esc)
-        .add_system(systems::movement.in_schedule(CoreSchedule::FixedUpdate))
-        .add_startup_system(setup_scene)
-        .add_system(setup_scene_once_loaded.in_base_set(StartupSet::PostStartup));
+        .add_systems(Update, bevy::window::close_on_esc)
+        .add_systems(FixedUpdate, systems::movement)
+        .add_systems(Startup, setup_scene)
+        .add_systems(PostStartup, setup_scene_once_loaded);
 
     app.run();
 }
