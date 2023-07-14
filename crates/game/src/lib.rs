@@ -1,5 +1,6 @@
 use bevy::{gltf::*, math::vec3, pbr::*, prelude::*, utils::*};
 mod components;
+mod plugins;
 mod resources;
 mod systems;
 
@@ -12,17 +13,19 @@ struct Animations(Vec<Handle<AnimationClip>>);
 pub fn main() {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins)
+        .add_plugins(plugins::MipmapGeneratorPlugin)
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(FixedTime::new_from_secs(1.0 / 50.0))
         .add_systems(Update, bevy::window::close_on_esc)
         .add_systems(FixedUpdate, systems::movement)
         .add_systems(Startup, setup_scene)
-        .add_systems(PostStartup, setup_scene_once_loaded);
+        .add_systems(Update, setup_scene_once_loaded)
+        .add_systems(Update, plugins::generate_mipmaps::<StandardMaterial>);
 
     app.run();
 }
 
-fn setup_scene(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, asset_server: Res<AssetServer>) {
+fn setup_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut resource_map: HashMap<String, Handle<Gltf>> = HashMap::new();
     resource_map.insert("character".into(), asset_server.load("models/character.glb"));
     resource_map.insert("skeleton".into(), asset_server.load("models/skeleton.glb"));
@@ -43,10 +46,10 @@ fn setup_scene(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, asset_s
         ..default()
     });
 
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Cube::new(1.0).into()),
-        ..Default::default()
-    });
+    // commands.spawn(PbrBundle {
+    //     mesh: meshes.add(shape::Cube::new(1.0).into()),
+    //     ..Default::default()
+    // });
 
     commands.insert_resource(Animations(vec![asset_server.load("models/character.glb#Animation0")]));
 }
@@ -75,19 +78,19 @@ fn setup_scene_once_loaded(
             *done = true;
         }
 
-        let skeleton_bundles = resources::get_bundles_from_model(
-            "skeleton",
-            "skeleton",
-            &assets,
-            &gltfs,
-            &gltf_meshes,
-            Some(Transform::from_translation(vec3(2.0, 0.0, 0.0))),
-        );
+        // let skeleton_bundles = resources::get_bundles_from_model(
+        //     "skeleton",
+        //     "skeleton",
+        //     &assets,
+        //     &gltfs,
+        //     &gltf_meshes,
+        //     Some(Transform::from_translation(vec3(2.0, 0.0, 0.0))),
+        // );
 
-        if let Some(bundles) = skeleton_bundles {
-            commands.spawn_batch(bundles);
-            *done = true;
-        }
+        // if let Some(bundles) = skeleton_bundles {
+        //     commands.spawn_batch(bundles);
+        //     *done = true;
+        // }
 
         if let Ok(mut player) = player.get_single_mut() {
             player.play(animations.0[0].clone_weak()).repeat();
